@@ -1,0 +1,157 @@
+# 📦 Dépôt Git pour Netlify - Demande Appro PWA
+
+Voici la structure et le contenu des fichiers à déposer dans GitHub pour déploiement Netlify.
+
+---
+
+## **1️⃣ index.html**
+```html
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Demande d'Approvisionnement</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png" type="image/png">
+<style>
+  body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+  .container { background: white; padding: 20px; border-radius: 8px; max-width: 500px; margin: 20px auto; box-shadow: 0px 2px 6px rgba(0,0,0,0.2); }
+  h1 { text-align: center; }
+  label { font-weight: bold; margin-top: 10px; display: block; }
+  select, input, textarea, button { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+  button { background: #007BFF; color: white; border: none; cursor: pointer; margin-top: 15px; }
+  button:hover { background: #0056b3; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Demande d'Appro</h1>
+  <form id="approForm">
+    <label>Affaire :</label>
+    <input type="text" id="affaire" required>
+
+    <label>OF :</label>
+    <input type="text" id="of" required>
+
+    <label>Délai :</label>
+    <input type="date" id="delai" required>
+
+    <label>Article :</label>
+    <select id="article" required></select>
+
+    <label>Quantité :</label>
+    <input type="number" id="quantite" required>
+
+    <label>Commentaire :</label>
+    <textarea id="commentaire"></textarea>
+
+    <button type="submit">Envoyer la demande</button>
+  </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@2/dist/email.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
+```
+
+---
+
+## **2️⃣ app.js**
+```javascript
+(function() {
+  emailjs.init("W8X9yPZK123abcXYZ"); // Remplace par ton USER ID EmailJS
+})();
+
+const articles = [
+  "BHC - Tube Rond 304L",
+  "Bride 11B - Tube Rond 316L",
+  "Bride Emboutie - Tube Rond S235",
+  "Bride Plate - Tube Rond P235GH",
+  "Bride Tournante - Tube Rond P265GH"
+];
+
+const articleSelect = document.getElementById('article');
+articles.forEach(a => {
+  const opt = document.createElement('option');
+  opt.value = a;
+  opt.textContent = a;
+  articleSelect.appendChild(opt);
+});
+
+document.getElementById('approForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  const params = {
+    affaire: document.getElementById('affaire').value,
+    of: document.getElementById('of').value,
+    delai: document.getElementById('delai').value,
+    article: document.getElementById('article').value,
+    quantite: document.getElementById('quantite').value,
+    commentaire: document.getElementById('commentaire').value,
+    destinataire: 'flaforet@entreprise-calvet.fr'
+  };
+  emailjs.send('service_calvet', 'template_demande_appro', params)
+    .then(() => alert('✅ Demande envoyée à flaforet@entreprise-calvet.fr'))
+    .catch(err => alert('❌ Erreur: ' + JSON.stringify(err)));
+});
+```
+
+---
+
+## **3️⃣ manifest.json**
+```json
+{
+  "name": "Demande d'Approvisionnement",
+  "short_name": "Demande Appro",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007BFF",
+  "description": "Application pour créer et envoyer des demandes d'approvisionnement.",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
+```
+
+---
+
+## **4️⃣ service-worker.js**
+```javascript
+self.addEventListener('install', e => {
+  e.waitUntil(
+    caches.open('demande-appro-cache').then(cache => {
+      return cache.addAll(['/', '/index.html', '/app.js', '/manifest.json', '/icon-192.png', '/icon-512.png']);
+    })
+  );
+});
+
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(response => response || fetch(e.request))
+  );
+});
+```
+
+---
+
+## **5️⃣ README.md**
+```markdown
+# Demande Appro PWA
+Application PWA permettant de créer et envoyer des demandes d'approvisionnement.
+
+## 🚀 Déploiement sur Netlify
+1. Crée un compte Netlify.
+2. Connecte ton dépôt GitHub.
+3. Sélectionne le dépôt et clique sur **Deploy**.
+4. Lien en HTTPS disponible immédiatement.
+
+## 📱 Installation sur téléphone
+- Android : Ouvrir lien → Ajouter à l'écran d'accueil.
+- iOS : Safari → Partager → Sur l'écran d'accueil.
+```
+
+---
+
+Ces fichiers sont prêts à pousser sur **GitHub** puis à connecter à **Netlify**.
